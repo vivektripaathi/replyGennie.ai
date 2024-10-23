@@ -1,6 +1,6 @@
 ## Reply Gennie
 
-Reply-Gennie is an intelligent email management tool designed to enhance your email communication experience. This application actively monitors your inbox for new and unread emails, utilizing OpenAI's advanced language processing capabilities to read incoming messages. Upon detection of an email, Reply-Gennie assigns an appropriate label based on the content and context of the message, ensuring efficient organization. Additionally, it generates and sends thoughtful replies automatically, streamlining your email responses and improving productivity.
+**Reply-Gennie** is an intelligent email management tool designed to enhance your email communication experience. This application actively monitors your inbox for new and unread emails, utilizing OpenAI's advanced language processing capabilities to read incoming messages. Upon detection of an email, Reply-Gennie assigns an appropriate label based on the content and context of the message, ensuring efficient organization. Additionally, it generates and sends thoughtful replies automatically, streamlining your email responses and improving productivity.
 
 Whether you're managing personal or professional correspondence, Reply-Gennie provides a seamless solution for effective email handling, allowing you to focus on what matters most.
 
