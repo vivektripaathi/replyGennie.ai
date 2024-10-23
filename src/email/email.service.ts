@@ -23,6 +23,12 @@ export class EmailService {
         });
     }
 
+    async scheduleEmailChecking() {
+        await this.emailQueue.add('checkUnreadEmails', {}, {
+            delay: 60000,
+        });
+    }
+
 
     async checkUnreadEmails() {
         try {
@@ -35,7 +41,7 @@ export class EmailService {
 
             const messages = res.data.messages || [];
             for (const message of messages) {
-                // enqueue for processing
+                await this.emailQueue.add('processEmail', { messageId: message.id });
             }
         } catch (error) {
             this.logger.error('Error checking unread emails:', error.message);
