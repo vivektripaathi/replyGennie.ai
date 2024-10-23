@@ -23,6 +23,7 @@ export class EmailService {
         });
     }
 
+
     async checkUnreadEmails() {
         try {
             if (!this.gmailClient) return;
@@ -40,5 +41,28 @@ export class EmailService {
             this.logger.error('Error checking unread emails:', error.message);
         }
     }
+
+
+    async getEmailData(messageId: string) {
+        try {
+            const res = await this.gmailClient.users.messages.get({
+                userId: 'me',
+                id: messageId,
+            });
+
+            const email = res.data;
+            const headers = email.payload.headers;
+            const subject = headers.find(header => header.name === 'Subject')?.value || 'No Subject';
+            const from = headers.find(header => header.name === 'From')?.value || '';
+            const to = headers.find(header => header.name === 'To')?.value || '';
+            const emailContent = email.snippet || '';
+
+            return { from, to, subject, emailContent };
+        } catch (error) {
+            this.logger.error(`Error fetching email data for message ID ${messageId}:`, error.message);
+            return null;
+        }
+    }
+
 
 }
