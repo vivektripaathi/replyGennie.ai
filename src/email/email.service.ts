@@ -100,4 +100,21 @@ export class EmailService {
         const encodedMessage = Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         return encodedMessage;
     }
+
+
+    private async markEmailAsRead(messageId: string) {
+        try {
+            await this.gmailClient.users.messages.modify({
+                userId: 'me',
+                id: messageId,
+                requestBody: {
+                    removeLabelIds: ['UNREAD'], // Removes the "UNREAD" label
+                },
+            });
+            this.logger.log(`Email marked as read: ${messageId}`);
+        } catch (error) {
+            this.logger.error(`Error marking email as read for message ID ${messageId}:`, error.message);
+        }
+    }
+
 }
