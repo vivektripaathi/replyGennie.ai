@@ -1,6 +1,7 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
+import { EmailService } from 'src/email/email.service';
 
 interface Request {
     user?: any;
@@ -8,6 +9,7 @@ interface Request {
 
 @Controller('auth')
 export class AuthController {
+    constructor(private emailService: EmailService) {}
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
@@ -18,6 +20,9 @@ export class AuthController {
     async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
         const user = req.user;
         console.log('Google user info:', user);
+
+        const accessToken = req.user.accessToken;
+        this.emailService.initializeGmailClient(accessToken);
 
         res.redirect('/');
     }
