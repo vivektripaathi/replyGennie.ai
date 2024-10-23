@@ -22,4 +22,23 @@ export class EmailService {
             auth: oauth2Client,
         });
     }
+
+    async checkUnreadEmails() {
+        try {
+            if (!this.gmailClient) return;
+
+            const res = await this.gmailClient.users.messages.list({
+                userId: 'me',
+                q: 'is:unread',
+            });
+
+            const messages = res.data.messages || [];
+            for (const message of messages) {
+                // enqueue for processing
+            }
+        } catch (error) {
+            this.logger.error('Error checking unread emails:', error.message);
+        }
+    }
+
 }
