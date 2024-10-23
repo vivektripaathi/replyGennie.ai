@@ -9,10 +9,19 @@ export class EmailService {
     private readonly logger = new Logger(EmailService.name);
     private gmailClient;
 
+
+    private labelMapping = {
+        'Interested': 'Label_3035777443514222121',
+        'Not interested': 'Label_5649682475137114370',
+        'More information': 'Label_5331249162142973886',
+    };
+
+
     constructor(
         @InjectQueue('emailQueue') private emailQueue: Queue,
         private readonly openaiService: OpenaiService
     ) {}
+
 
     initializeGmailClient(accessToken: string) {
         const oauth2Client = new google.auth.OAuth2();
@@ -22,6 +31,7 @@ export class EmailService {
             auth: oauth2Client,
         });
     }
+
 
     async scheduleEmailChecking() {
         await this.emailQueue.add('checkUnreadEmails', {}, {
@@ -108,6 +118,22 @@ export class EmailService {
     }
 
 
+    private async assignLabelToEmail(messageId: string, labelId: string) {
+        try {
+            await this.gmailClient.users.messages.modify({
+                userId: 'me',
+                id: messageId,
+                requestBody: {
+                    addLabelIds: [labelId], // Adds the specified label
+                },
+            });
+            this.logger.log(`Label ${labelId} assigned to email: ${messageId}`);
+        } catch (error) {
+            this.logger.error(`Error assigning label to email for message ID ${messageId}:`, error.message);
+        }
+    }
+
+
     private async markEmailAsRead(messageId: string) {
         try {
             await this.gmailClient.users.messages.modify({
@@ -133,6 +159,12 @@ export class EmailService {
 
             const category = await this.openaiService.categorizeEmailContent(emailContent);
             this.logger.log('Email Category:', category);
+            const labelId = this.labelMapping[category] || null;
+            if (labelId) {
+                await this.assignLabelToEmail(messageId, labelId); // Assign the label if it exists
+            } else {
+                this.logger.warn(`No label found for category: ${category}`);
+            }
 
             const replyContent = await this.openaiService.generateEmailReply(emailContent);
             this.logger.log('Generated Reply:', replyContent);
