@@ -48,9 +48,9 @@ Before you begin, ensure you have the following installed:
 
 1. **Environment Variables**: Rename the provided .env.example file to .env in the project root:
 
-```bash
+    ```bash
     mv .env.example .env
-```
+    ```
 
 2. **Edit the `.env` File**: Open the `.env` file and fill the variables with your values:
 
