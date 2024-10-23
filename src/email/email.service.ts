@@ -65,4 +65,39 @@ export class EmailService {
     }
 
 
+    private async sendReplyEmail(messageId: string, emailData: { from: string; to: string, subject: string; text: string }) {
+        try {
+            const { from, to, subject, text } = emailData;
+
+            const message = this.createReplyMessage(to, from, subject, text, messageId);
+
+            const res = await this.gmailClient.users.messages.send({
+                userId: 'me',
+                requestBody: {
+                    raw: message,
+                },
+            });
+
+            this.logger.log(`Reply sent to: ${from}, message ID: ${res.data.id}`);
+        } catch (error) {
+            this.logger.error(`Error sending reply email:`, error.message);
+        }
+    }
+
+
+    private createReplyMessage(from: string, to: string, subject: string, text: string, messageId: string): string {
+        const messageParts = [
+            `From: ${from}`,
+            `To: ${to}`,
+            `Subject: Re: ${subject}`,
+            `In-Reply-To: ${messageId}`,
+            `References: ${messageId}`,
+            '',
+            text,
+        ];
+    
+        const message = messageParts.join('\n');
+        const encodedMessage = Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        return encodedMessage;
+    }
 }
