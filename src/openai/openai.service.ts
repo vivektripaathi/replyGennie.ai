@@ -28,10 +28,10 @@ export class OpenaiService {
         const response = await this.openai.chat.completions.create({
             model: "@cf/meta/llama-3.1-8b-instruct",
             messages: [
-                {role: 'system', content: 'Categorize this email content into one of the following categories: 1. Interested, 2. Not Interested, 3.More information. Return the category only',},
+                {role: 'system', content: 'Categorize this email content into one of the following categories: 1. Interested, 2. Not Interested, 3.More information. please answer in Interested, Not Interested, More information words only dont include number',},
                 {role: 'user', content: emailContent }
             ],
-            max_tokens: 50,
+            max_tokens: 20,
         });
         return response.choices[0].message.content.trim();
     }
