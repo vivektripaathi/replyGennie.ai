@@ -23,4 +23,16 @@ export class OpenaiService {
         });
         return response.choices[0].message.content.trim();
     }
+
+    async categorizeEmailContent(emailContent: string): Promise<string> {
+        const response = await this.openai.chat.completions.create({
+            model: "@cf/meta/llama-3.1-8b-instruct",
+            messages: [
+                {role: 'system', content: 'Categorize this email content into one of the following categories: 1. Interested, 2. Not Interested, 3.More information. Return the category only',},
+                {role: 'user', content: emailContent }
+            ],
+            max_tokens: 50,
+        });
+        return response.choices[0].message.content.trim();
+    }
 }
