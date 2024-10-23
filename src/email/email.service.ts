@@ -117,4 +117,25 @@ export class EmailService {
         }
     }
 
+
+    async processIncomingEmail(messageId: string, emailData: { from: string; to: string, subject: string; emailContent: string }) {
+        try {
+            const { from, to, subject, emailContent } = emailData;
+
+            const emailContext = await this.openaiService.analyzeEmailContext(emailContent);
+            this.logger.log('Email Context:', emailContext);
+
+            const category = await this.openaiService.categorizeEmailContent(emailContent);
+            this.logger.log('Email Category:', category);
+
+            const replyContent = await this.openaiService.generateEmailReply(emailContent);
+            this.logger.log('Generated Reply:', replyContent);
+
+            await this.sendReplyEmail(messageId, { from: from, to: to, subject: subject, text: replyContent });
+
+            await this.markEmailAsRead(messageId);
+        } catch (error) {
+            this.logger.error('Error processing incoming email:', error.message);
+        }
+    }
 }
