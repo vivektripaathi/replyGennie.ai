@@ -35,4 +35,16 @@ export class OpenaiService {
         });
         return response.choices[0].message.content.trim();
     }
+
+    async generateEmailReply(emailContent: string): Promise<string> {
+        const response = await this.openai.chat.completions.create({
+            model: "@cf/meta/llama-3.1-8b-instruct",
+            messages: [
+                {role: 'system', content: 'Generate an appropriate reply for the following email content ans return reply message only',},
+                { role: 'user', content: emailContent }
+            ],
+            max_tokens: 150,
+        });
+        return response.choices[0].message.content.trim();
+    }
 }
